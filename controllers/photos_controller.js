@@ -7,36 +7,40 @@ const { matchedData, validationResult } = require('express-validator');
 const models = require('../models');
 
 /**
- * Get all resources
+ * Get all photos
  *
  * GET /
  */
 const index = async (req, res) => {
-	const examples = await models.Example.fetchAll();
+	const all_photos = await models.Photos.fetchAll();
 
 	res.send({
 		status: 'success',
-		data: examples,
+		data: { 
+			photos: all_photos
+		}
 	});
 }
 
 /**
- * Get a specific resource
+ * Get a photo
  *
- * GET /:exampleId
+ * GET /:photoId
  */
 const show = async (req, res) => {
-	const example = await new models.Example({ id: req.params.exampleId })
-		.fetch();
+	const photo = await new models.Photos({ id: req.params.id })
+		.fetch({ withRelated: ['user', 'albums'] });
 
 	res.send({
 		status: 'success',
-		data: example,
+		data: { 
+			photo,
+		}
 	});
 }
 
 /**
- * Store a new resource
+ * Store a new photo
  *
  * POST /
  */

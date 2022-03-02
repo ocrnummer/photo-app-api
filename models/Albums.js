@@ -3,7 +3,13 @@
  */
 
 module.exports = (bookshelf) => {
-	return bookshelf.model('Example', {
-		tableName: 'examples',
+	return bookshelf.model('Albums', {
+		tableName: 'Albums',
+		user() {
+			return this.belongsTo('Users');
+		},
+		photos() {
+			return this.belongsToMany('Photos');
+		}
 	});
 };

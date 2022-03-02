@@ -3,19 +3,19 @@ const router = express.Router();
 const photosController = require('../controllers/photos_controller');
 const photosValidationRules = require('../validation/photos');
 
-/* Get all resources */
+/* Get all photos */
 router.get('/', photosController.index);
 
-/* Get a specific resource */
+/* Get a photo */
 router.get('/:id', photosController.show);
 
-/* Store a new resource */
+/* Store a new photo */
 router.post('/', photosValidationRules.createRules, photosController.store);
 
-/* Update a specific resource */
+/* Update a photo */
 router.put('/:id', photosValidationRules.updateRules, photosController.update);
 
-/* Destroy a specific resource */
+/* Destroy a photo */
 router.delete('/:id', photosController.destroy);
 
 module.exports = router;
