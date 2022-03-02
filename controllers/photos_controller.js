@@ -40,10 +40,11 @@ const show = async (req, res) => {
 }
 
 /**
- * Store a new photo
- *
- * POST /
- */
+* Post a new photo
+*
+* POST /
+*/
+
 const store = async (req, res) => {
 	// check for any validation errors
 	const errors = validationResult(req);
@@ -55,18 +56,18 @@ const store = async (req, res) => {
 	const validData = matchedData(req);
 
 	try {
-		const example = await new models.Example(validData).save();
-		debug("Created new example successfully: %O", example);
+		const photo = await new models.Photos(validData).save();
+		debug("Post new photo successfully: %O", photo);
 
 		res.send({
 			status: 'success',
-			data: example,
+			data: photo,
 		});
 
 	} catch (error) {
 		res.status(500).send({
 			status: 'error',
-			message: 'Exception thrown in database when creating a new example.',
+			message: 'Exception thrown in database when posting a new photo.',
 		});
 		throw error;
 	}
