@@ -140,7 +140,7 @@ const destroy = async (req, res) => {
 	try {
 
 		const deletePhoto = await photo.destroy();
-		debug("Updated photo successfully", deletePhoto);
+		debug("Photo deleted successfully", deletePhoto);
 
 		res.send({
 			status: 'success',
