@@ -87,7 +87,7 @@ const update = async (req, res) => {
 		debug("No photo to update was found", { id, });
 		res.status(404).send({
 			status: 'fail',
-			data: 'Example Not Found',
+			data: 'Photo Not Found',
 		});
 		return;
 	}
@@ -120,15 +120,43 @@ const update = async (req, res) => {
 }
 
 /**
- * Destroy a specific resource
+ * Remove a specific photo
  *
- * DELETE /:exampleId
+ * DELETE /:Id
  */
-const destroy = (req, res) => {
-	res.status(400).send({
-		status: 'fail',
-		message: 'You need to write the code for deleting this resource yourself.',
-	});
+const destroy = async (req, res) => {
+
+	const photo = await new models.Photos({ id: req.params.id }).fetch({ require: false });
+
+	if (!photo) {
+		debug("No photo to delete was found", { id, });
+		res.status(404).send({
+			status: 'fail',
+			data: 'Photo Not Found',
+		});
+		return;
+	}
+
+	try {
+
+		const deletePhoto = await photo.destroy();
+		debug("Updated photo successfully", deletePhoto);
+
+		res.send({
+			status: 'success',
+		});
+
+		if(!photo) {
+			return res.sendStatus(404);
+		};
+
+		} catch (error) {
+		res.status(500).send({
+			status: 'error',
+			message: 'Exception thrown in database when deleting a photo.',
+		});
+		throw error;
+	};
 }
 
 module.exports = {
