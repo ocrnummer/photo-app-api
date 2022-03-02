@@ -76,15 +76,15 @@ const store = async (req, res) => {
 /**
  * Update a specific resource
  *
- * PUT /:exampleId
+ * PUT /:Id
  */
 const update = async (req, res) => {
-	const exampleId = req.params.exampleId;
+	const photo_id = req.params.id;
 
-	// make sure example exists
-	const example = await new models.Example({ id: exampleId }).fetch({ require: false });
-	if (!example) {
-		debug("Example to update was not found. %o", { id: exampleId });
+	// make sure photo exists
+	const photo = await new models.Photos({ id: req.params.id }).fetch({ require: false });
+	if (!photo) {
+		debug("No photo to update was found", { id, });
 		res.status(404).send({
 			status: 'fail',
 			data: 'Example Not Found',
@@ -102,12 +102,12 @@ const update = async (req, res) => {
 	const validData = matchedData(req);
 
 	try {
-		const updatedExample = await example.save(validData);
-		debug("Updated example successfully: %O", updatedExample);
+		const updatePhoto = await photo.save(validData);
+		debug("Updated photo successfully", updatePhoto);
 
 		res.send({
 			status: 'success',
-			data: example,
+			data: updatePhoto,
 		});
 
 	} catch (error) {
