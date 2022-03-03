@@ -8,7 +8,7 @@ router.get('/', (req, res, next) => {
 
 // Router
 router.use('/photos', require('./photos'));
-// router.use('/albums', require('./albums'));
+router.use('/albums', require('./albums'));
 router.use('/users', require('./users'));
 
 

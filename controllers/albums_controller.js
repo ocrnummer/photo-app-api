@@ -1,46 +1,46 @@
 /**
- * Photos Controller
+ * Albums Controller
  */
 
-const debug = require('debug')('photo-app-api:photo_controller');
+const debug = require('debug')('photo-app-api:album_controller');
 const { matchedData, validationResult } = require('express-validator');
 const models = require('../models');
 
 /**
- * Get all photos
+ * Get all albums
  *
  * GET /
  */
 const index = async (req, res) => {
-	const all_photos = await models.Photos.fetchAll();
+	const all_albums = await models.Albums.fetchAll();
 
 	res.send({
 		status: 'success',
 		data: { 
-			photos: all_photos
+			albums: all_albums
 		}
 	});
 }
 
 /**
- * Get a photo
+ * Get an album
  *
- * GET /:photoId
+ * GET /:Id
  */
 const show = async (req, res) => {
-	const photo = await new models.Photos({ id: req.params.id })
-		.fetch({ withRelated: ['user', 'albums'] });
+	const album = await new models.Albums({ id: req.params.id })
+		.fetch({ withRelated: ['user', 'photos'] });
 
 	res.send({
 		status: 'success',
 		data: { 
-			photo,
+			album,
 		}
 	});
 }
 
 /**
-* Post a new photo
+* Create a new album
 *
 * POST /
 */
@@ -56,37 +56,37 @@ const store = async (req, res) => {
 	const validData = matchedData(req);
 
 	try {
-		const photo = await new models.Photos(validData).save();
-		debug("Post new photo successfully: %O", photo);
+		const album = await new models.Albums(validData).save();
+		debug("Created a new album successfully", album);
 
 		res.send({
 			status: 'success',
-			data: photo,
+			data: album
 		});
 
 	} catch (error) {
 		res.status(500).send({
 			status: 'error',
-			message: 'Exception thrown in database when posting a new photo.',
+			message: 'Exception thrown in database when creating a new album.',
 		});
 		throw error;
 	}
 }
 
 /**
- * Update a specific photo
+ * Update a specific album
  *
  * PUT /:Id
  */
 const update = async (req, res) => {
 
-	// make sure photo exists
-	const photo = await new models.Photos({ id: req.params.id }).fetch({ require: false });
-	if (!photo) {
-		debug("No photo to update was found", { id, });
+	// make sure the album exists
+	const album = await new models.Albums({ id: req.params.id }).fetch({ require: false });
+	if (!album) {
+		debug("No album to update was found", { id, });
 		res.status(404).send({
 			status: 'fail',
-			data: 'Photo Not Found',
+			data: 'Album Not Found',
 		});
 		return;
 	}
@@ -101,58 +101,58 @@ const update = async (req, res) => {
 	const validData = matchedData(req);
 
 	try {
-		const updatePhoto = await photo.save(validData);
-		debug("Updated photo successfully", updatePhoto);
+		const updateAlbum = await album.save(validData);
+		debug("Updated album successfully", updateAlbum);
 
 		res.send({
 			status: 'success',
-			data: updatePhoto,
+			data: updateAlbum,
 		});
 
 	} catch (error) {
 		res.status(500).send({
 			status: 'error',
-			message: 'Exception thrown in database when updating a photo.',
+			message: 'Exception thrown in database when updating an album.',
 		});
 		throw error;
 	}
 }
 
 /**
- * Remove a specific photo
+ * Remove a specific album
  *
  * DELETE /:Id
  */
 const destroy = async (req, res) => {
 
-	const photo = await new models.Photos({ id: req.params.id }).fetch({ require: false });
+	const album = await new models.Albums({ id: req.params.id }).fetch({ require: false });
 
-	if (!photo) {
-		debug("No photo to delete was found", { id, });
+	if (!album) {
+		debug("No album to delete was found", { id, });
 		res.status(404).send({
 			status: 'fail',
-			data: 'Photo Not Found',
+			data: 'Album Not Found',
 		});
 		return;
 	}
 
 	try {
 
-		const deletePhoto = await photo.destroy();
-		debug("Photo deleted successfully", deletePhoto);
+		const deleteAlbum = await album.destroy();
+		debug("Album deleted successfully", deleteAlbum);
 
 		res.send({
 			status: 'success',
 		});
 
-		if(!photo) {
+		if(!album) {
 			return res.sendStatus(404);
 		};
 
 		} catch (error) {
 		res.status(500).send({
 			status: 'error',
-			message: 'Exception thrown in database when deleting a photo.',
+			message: 'Exception thrown in database when deleting a album.',
 		});
 		throw error;
 	};

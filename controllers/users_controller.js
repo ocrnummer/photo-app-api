@@ -1,8 +1,8 @@
 /**
- * Photos Controller
+ * Users Controller
  */
 
-const debug = require('debug')('photo-app-api:photo_controller');
+const debug = require('debug')('photo-app-api:users_controller');
 const { matchedData, validationResult } = require('express-validator');
 const models = require('../models');
 
@@ -17,7 +17,7 @@ const index = async (req, res) => {
 	res.send({
 		status: 'success',
 		data: { 
-			photos: all_users
+			users: all_users
 		}
 	});
 }
@@ -102,7 +102,7 @@ const update = async (req, res) => {
 
 	try {
 		const updateUser = await user.save(validData);
-		debug("Updated photo successfully", updateUser);
+		debug("Updated user successfully", updateUser);
 
 		res.send({
 			status: 'success',
@@ -112,14 +112,14 @@ const update = async (req, res) => {
 	} catch (error) {
 		res.status(500).send({
 			status: 'error',
-			message: 'Exception thrown in database when updating a new example.',
+			message: 'Exception thrown in database when updating a user.',
 		});
 		throw error;
 	}
 }
 
 /**
- * Remove a specific photo
+ * Remove a specific user
  *
  * DELETE /:Id
  */
