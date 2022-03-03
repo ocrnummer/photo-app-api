@@ -74,12 +74,11 @@ const store = async (req, res) => {
 }
 
 /**
- * Update a specific resource
+ * Update a specific photo
  *
  * PUT /:Id
  */
 const update = async (req, res) => {
-	const photo_id = req.params.id;
 
 	// make sure photo exists
 	const photo = await new models.Photos({ id: req.params.id }).fetch({ require: false });

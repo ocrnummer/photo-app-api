@@ -56,18 +56,18 @@ const store = async (req, res) => {
 	const validData = matchedData(req);
 
 	try {
-		const photo = await new models.Photos(validData).save();
-		debug("Post new photo successfully: %O", photo);
+		const user = await new models.Users(validData).save();
+		debug("Register new user successfully", user);
 
 		res.send({
 			status: 'success',
-			data: photo,
+			data: user,
 		});
 
 	} catch (error) {
 		res.status(500).send({
 			status: 'error',
-			message: 'Exception thrown in database when posting a new photo.',
+			message: 'Exception thrown in database when registering a new user.',
 		});
 		throw error;
 	}
@@ -79,15 +79,14 @@ const store = async (req, res) => {
  * PUT /:Id
  */
 const update = async (req, res) => {
-	const photo_id = req.params.id;
 
-	// make sure photo exists
-	const photo = await new models.Photos({ id: req.params.id }).fetch({ require: false });
-	if (!photo) {
-		debug("No photo to update was found", { id, });
+	// make sure user exists
+	const user = await new models.Users({ id: req.params.id }).fetch({ require: false });
+	if (!user) {
+		debug("No user to update was found", { id, });
 		res.status(404).send({
 			status: 'fail',
-			data: 'Photo Not Found',
+			data: 'User Not Found',
 		});
 		return;
 	}
@@ -102,12 +101,12 @@ const update = async (req, res) => {
 	const validData = matchedData(req);
 
 	try {
-		const updatePhoto = await photo.save(validData);
-		debug("Updated photo successfully", updatePhoto);
+		const updateUser = await user.save(validData);
+		debug("Updated photo successfully", updateUser);
 
 		res.send({
 			status: 'success',
-			data: updatePhoto,
+			data: updateUser,
 		});
 
 	} catch (error) {
@@ -126,34 +125,34 @@ const update = async (req, res) => {
  */
 const destroy = async (req, res) => {
 
-	const photo = await new models.Photos({ id: req.params.id }).fetch({ require: false });
+	const user = await new models.Users({ id: req.params.id }).fetch({ require: false });
 
-	if (!photo) {
-		debug("No photo to delete was found", { id, });
+	if (!user) {
+		debug("No user was found", { id, });
 		res.status(404).send({
 			status: 'fail',
-			data: 'Photo Not Found',
+			data: 'User Not Found',
 		});
 		return;
 	}
 
 	try {
 
-		const deletePhoto = await photo.destroy();
-		debug("Photo deleted successfully", deletePhoto);
+		const deleteUser = await user.destroy();
+		debug("User deleted successfully", deleteUser);
 
 		res.send({
 			status: 'success',
 		});
 
-		if(!photo) {
+		if(!user) {
 			return res.sendStatus(404);
 		};
 
 		} catch (error) {
 		res.status(500).send({
 			status: 'error',
-			message: 'Exception thrown in database when deleting a photo.',
+			message: 'Exception thrown in database when deleting a user.',
 		});
 		throw error;
 	};
