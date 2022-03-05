@@ -19,3 +19,8 @@ router.put('/:id', albumsValidationRules.updateRules, albumsController.update);
 router.delete('/:id', albumsController.destroy);
 
 module.exports = router;
+
+
+
+
+

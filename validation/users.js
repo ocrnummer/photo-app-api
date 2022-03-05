@@ -1,7 +1,3 @@
-/**
- * Photo Validation Rules
- */
-
 const { body } = require('express-validator');
 const models = require('../models');
 
@@ -14,25 +10,24 @@ const models = require('../models');
 
 const createRules = [
 
-	/**		FIXA SÅ EN EMAIL BARA KAN REGISTRERAS EN GÅNG  **/
-
-	body('email').exists().isLength({ min: 4 })
-	// .custom(async value => {
-	// 	const user = await new models.Users({ email: value}).fetch({ required: false })
-	// 	if (user) {
-	// 		return Promise.rejected('Email already registered.');
-	// 	}
-	// 	return Promise.resolve();
-	// })
-	,
-
-	body('password').exists().isLength({ min: 6 }),
-	body('first_name').exists().isLength({ min: 2 }),
-	body('last_name').exists().isLength({ min: 2 })
+    body('email').exists().isEmail().custom(async value => {
+        const email = await new models.Users({ email: value }).fetch({ require: false });
+        if (email) {
+            return Promise.reject('Email already in use.');
+        }
+        return Promise.resolve();
+    }),
+    body('password').exists().isLength({ min: 6 }),
+    body('first_name').exists().isLength({ min: 3 }),
+    body('last_name').exists().isLength({ min: 3 }),
 ];
 
+
+
+
+
 /**
- * Update photo validation rules
+ * Update user validation rules
  *
  * Required: -
  * Optional:  password, first_name, last_name
@@ -40,8 +35,8 @@ const createRules = [
 
 const updateRules = [
 	body('password').optional().isLength({ min: 6 }),
-	body('first_name').optional().isLength({ min: 2 }),
-	body('last_name').optional().isLength({ min: 2 })
+	body('first_name').optional().isLength({ min: 3 }),
+	body('last_name').optional().isLength({ min: 3 })
 ];
 
 module.exports = {

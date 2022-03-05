@@ -1,5 +1,9 @@
 const express = require('express');
 const router = express.Router();
+const authController = require('../controllers/authentication_controller');
+const usersValidationRules = require('../validation/users');
+const authentication = require('../middlewares/authentication');
+
 
 /* GET / */
 router.get('/', (req, res, next) => {
@@ -7,9 +11,14 @@ router.get('/', (req, res, next) => {
 });
 
 // Router
-router.use('/photos', require('./photos'));
-router.use('/albums', require('./albums'));
+router.use('/photos', authentication.basic, require('./photos'));
+router.use('/albums', authentication.basic, require('./albums'));
 router.use('/users', require('./users'));
 
+
+router.post('/login', authController.login);
+
+
+router.post('/register', usersValidationRules.createRules, authController.registerNewUser);
 
 module.exports = router;

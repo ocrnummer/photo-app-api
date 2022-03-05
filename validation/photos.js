@@ -31,7 +31,16 @@ const updateRules = [
 	body('comment').optional().isLength({ min: 4, max: 100 }),
 ];
 
+
+
+const addToAlbum = [
+    body('photo_id').exists().isInt({ min: 1 })
+]
+
+
+
 module.exports = {
 	createRules,
 	updateRules,
+	addToAlbum
 }

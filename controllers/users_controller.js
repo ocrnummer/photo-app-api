@@ -2,6 +2,7 @@
  * Users Controller
  */
 
+const bcrypt = require('bcrypt');
 const debug = require('debug')('photo-app-api:users_controller');
 const { matchedData, validationResult } = require('express-validator');
 const models = require('../models');
@@ -10,6 +11,8 @@ const models = require('../models');
  * Get all users
  *
  * GET /
+ * 
+ *  		RENSA BORT SEN?
  */
 const index = async (req, res) => {
 	const all_users = await models.Users.fetchAll();
@@ -22,28 +25,82 @@ const index = async (req, res) => {
 	});
 }
 
-/**
- * Get a user
- *
- * GET /:id
- */
-const show = async (req, res) => {
-	const user = await new models.Users({ id: req.params.id })
-		.fetch({ withRelated: ['photos', 'albums'] });
 
-	res.send({
+
+
+
+/**
+ * Get authenticated user profile
+ *
+ * GET /
+*/
+const getProfile = async (req, res) => {
+	try {
+		const user = await User.fetchById(req.user.id);
+
+		res.send({
+			status: 'success',
+			data: {
+				user,
+			}
+		});
+	} catch (error) {
+		return res.sendStatus(404);
+	}
+}
+
+
+
+
+
+
+
+/**
+ * Get a user photos or album
+ *
+ * GET /photos
+ */
+
+const getUserPhotos = async (req, res) => {
+	const user = await new models.Users({ id: req.params.id })
+		.fetch({ withRelated: ['photos'] });
+
+	res.status(200).send({
 		status: 'success',
 		data: { 
-			user,
+			user: user.related('photos')
 		}
 	});
 }
+
+const getUserAlbums = async (req, res) => {
+	const user = await new models.Users({ id: req.params.id })
+		.fetch({ withRelated: ['albums'] });
+
+	res.status(200).send({
+		status: 'success',
+		data: { 
+			user: user.related('albums')
+		}
+	});
+}
+
+
+
+
+
+
+
+
+
+
 
 /**
 * Register a new user
 *
 * POST /
 */
+
 
 const store = async (req, res) => {
 	// check for any validation errors
@@ -59,9 +116,10 @@ const store = async (req, res) => {
 		const user = await new models.Users(validData).save();
 		debug("Register new user successfully", user);
 
+		const newUser = user.
 		res.send({
 			status: 'success',
-			data: user,
+			data: user.email,
 		});
 
 	} catch (error) {
@@ -73,12 +131,14 @@ const store = async (req, res) => {
 	}
 }
 
+
+
 /**
  * Update a specific resource
  *
- * PUT /:Id
+ * PUT /
  */
-const update = async (req, res) => {
+const updateUserProfile = async (req, res) => {
 
 	// make sure user exists
 	const user = await new models.Users({ id: req.params.id }).fetch({ require: false });
@@ -100,6 +160,19 @@ const update = async (req, res) => {
 	// get only the validated data from the request
 	const validData = matchedData(req);
 
+	if (validData.password) {
+		try {
+			validData.password = await bcrypt.hash(validData.password, models.User.hashSalt);
+		} catch (error) {
+			res.status(500).send({ 
+				status: 'error', 
+				message: 'Error when hashing password'
+			});
+			throw error;
+		}
+	}
+
+
 	try {
 		const updateUser = await user.save(validData);
 		debug("Updated user successfully", updateUser);
@@ -118,12 +191,13 @@ const update = async (req, res) => {
 	}
 }
 
+
 /**
  * Remove a specific user
  *
  * DELETE /:Id
  */
-const destroy = async (req, res) => {
+const deleteUserProfile = async (req, res) => {
 
 	const user = await new models.Users({ id: req.params.id }).fetch({ require: false });
 
@@ -158,10 +232,45 @@ const destroy = async (req, res) => {
 	};
 }
 
+
+
+
+
+const login = async (req, res) => {
+	// destructure email and password from request body
+	const { email, password } = req.body;
+
+	// login the user
+	const user = await models.User.login(email, password);
+	if (!user) {
+		return res.status(401).send({
+			status: 'fail',
+			data: 'Authentication failed.',
+		});
+	}
+
+	/*
+	// respond with the access-token
+	return res.send({
+		status: 'success',
+		data: {
+			access_token,
+//			access_token: access_token,
+		}
+	});
+	*/
+}
+
+
+
+
 module.exports = {
 	index,
-	show,
+	getProfile,
+	getUserPhotos,
+	getUserAlbums,
 	store,
-	update,
-	destroy,
+	login,
+	updateUserProfile,
+	deleteUserProfile,
 }
