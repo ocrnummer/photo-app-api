@@ -6,6 +6,12 @@ const debug = require('debug')('photo-app-api:album_controller');
 const { matchedData, validationResult } = require('express-validator');
 const models = require('../models');
 
+
+
+
+
+
+
 /**
  * Get all albums
  *
@@ -13,39 +19,52 @@ const models = require('../models');
  */
 const getAlbums = async (req, res) => {
 
-	const user = await models.Users.fetchById(req.user.id, {
-		withRelated: ['albums'],
-	})
-
-	// const user = await new models.Users
+	await req.user.load('albums');
 
 	res.status(200).send({
 		status: 'success',
-		data: { 
-			albums: user
-			.related('albums')
-		}
+		data: {
+			albums: req.user.related('albums')
+		},
 	});
+
 }
+
+
+
+
 
 /**
  * Get an album
  *
- * GET /:Id
+ * GET /:albumId
  */
 const getSpecificAlbum = async (req, res) => {
-	console.log(req.header)
+	// console.log(req.params.albumId)
+	// console.log(req.user.id)
 
-	const album = await new models.Albums({ id: req.params.id })
-		.fetch({ withRelated: ['user', 'photos'] });
+	const user = await req.user.load('albums');
 
-	res.send({
-		status: 'success',
-		data: { 
-			album,
-		}
-	});
+	const userAlbum = user.related('albums').find(album => album.id == req.params.albumId);
+
+	if (userAlbum) {
+		const photosFromAlbum = await models.Album.fetchById( req.params.albumId, { withRelated: ['photos']});
+
+		res.send({
+			status: 'success',
+			data: photosFromAlbum
+		})
+	} else {
+		return res.status(404).send({ status: 'Failed to get album'})
+	}
+
 }
+
+
+
+
+
+
 
 /**
 * Create a new album
@@ -60,7 +79,7 @@ const storeNewAlbum = async (req, res) => {
 	validData.user_id = req.user.id;
 
 	try {
-		const album = await new models.Albums(validData).save();
+		const album = await new models.Album(validData).save();
 		debug("Created a new album successfully", album);
 
 		res.send({
@@ -79,6 +98,9 @@ const storeNewAlbum = async (req, res) => {
 
 
 
+
+
+
 /**
  * Update a specific album
  *
@@ -87,7 +109,7 @@ const storeNewAlbum = async (req, res) => {
 const updateAlbum = async (req, res) => {
 
 	// make sure the album exists
-	const album = await new models.Albums({ id: req.params.id }).fetch({ require: false });
+	const album = await new models.Album({ id: req.params.albumId }).fetch({ require: false });
 	if (!album) {
 		debug("No album to update was found", { id, });
 		res.status(404).send({
@@ -124,44 +146,50 @@ const updateAlbum = async (req, res) => {
 	}
 }
 
-/**
- * Remove a specific album
- *
- * DELETE /:Id
- */
-const destroy = async (req, res) => {
 
-	const album = await new models.Albums({ id: req.params.id }).fetch({ require: false });
 
-	if (!album) {
-		debug("No album to delete was found", { id, });
-		res.status(404).send({
-			status: 'fail',
-			data: 'Album Not Found',
+
+
+
+
+const addPhoto = async (req, res) => {
+	const errors = validationResult(req);
+	if (!errors.isEmpty()) {
+		return res.status(422).send({ status: 'fail', data: errors.array()});
+	}
+
+	const validData = matchedData(req);
+
+
+	const user = await models.User.fetchById(req.user.id, { withRelated: ['albums'] });
+	const album = await models.Album.fetchById(req.params.albumId, { withRelated: ['photos'] });
+
+    const existing_photo = album.related('photos').find(photo => photo.id == validData.photo_id);
+	const userAlbums = user.related('albums').find(album => album.id == req.params.albumId);
+	const userPhotos = user.related('photos').find(photo => photo.id == validData.photo_id);
+
+
+	if (existing_photo) {
+		return res.send({
+			status: 'fail', 
+			data: 'Photo aldready in album'
 		});
-		return;
 	}
 
 	try {
-
-		const deleteAlbum = await album.destroy();
-		debug("Album deleted successfully", deleteAlbum);
-
+		const result = await album.photos().attach(validData.photo_id);
+	
 		res.send({
-			status: 'success',
+			status: 'success', 
+			data: null,
 		});
-
-		if(!album) {
-			return res.sendStatus(404);
-		};
-
-		} catch (error) {
+	} catch (error) {
 		res.status(500).send({
 			status: 'error',
-			message: 'Exception thrown in database when deleting a album.',
-		});
+			message: 'Error when adding a photo to an album.'
+		})
 		throw error;
-	};
+	}
 }
 
 module.exports = {
@@ -169,5 +197,5 @@ module.exports = {
 	getSpecificAlbum,
 	storeNewAlbum,
 	updateAlbum,
-	destroy,
+	addPhoto,
 }

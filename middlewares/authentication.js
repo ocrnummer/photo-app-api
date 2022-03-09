@@ -1,6 +1,6 @@
 const bcrypt = require('bcrypt');
 const debug = require('debug')('p:auth');
-const { Users } = require('../models');
+const models = require('../models');
 
 /**
  * HTTP Basic Authentication
@@ -36,7 +36,7 @@ const basic = async (req, res, next) => {
     const [email, password] = decodedPayload.split(':');
 
 
-    const user = await new Users({ email }).fetch({ require: false });
+    const user = await new models.User({ email }).fetch({ require: false });
     if (!user) {
         return res.status(401).send({
             status: 'fail',

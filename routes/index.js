@@ -13,9 +13,11 @@ router.get('/', (req, res, next) => {
 // Router
 router.use('/photos', authentication.basic, require('./photos'));
 router.use('/albums', authentication.basic, require('./albums'));
-router.use('/users', require('./users'));
+
+// router.use('/users', require('./users'));
 
 
 router.post('/register', usersValidationRules.createRules, authController.registerNewUser);
+
 
 module.exports = router;

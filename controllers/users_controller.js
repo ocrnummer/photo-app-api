@@ -44,7 +44,7 @@ const getProfile = async (req, res) => {
  */
 
 const getUserPhotos = async (req, res) => {
-	const user = await new models.Users({ id: req.params.id })
+	const user = await new models.User({ id: req.params.id })
 		.fetch({ withRelated: ['photos'] });
 
 	res.status(200).send({
@@ -57,7 +57,7 @@ const getUserPhotos = async (req, res) => {
 
 
 const getUserAlbums = async (req, res) => {
-	const user = await new models.Users({ id: req.params.id })
+	const user = await new models.User({ id: req.params.id })
 		.fetch({ withRelated: ['albums'] });
 
 	res.status(200).send({
@@ -181,39 +181,11 @@ const deleteUserProfile = async (req, res) => {
 
 
 
-// const login = async (req, res) => {
-// 	// destructure email and password from request body
-// 	const { email, password } = req.body;
-
-// 	// login the user
-// 	const user = await models.User.login(email, password);
-// 	if (!user) {
-// 		return res.status(401).send({
-// 			status: 'fail',
-// 			data: 'Authentication failed.',
-// 		});
-// 	}
-
-// 	/*
-// 	// respond with the access-token
-// 	return res.send({
-// 		status: 'success',
-// 		data: {
-// 			access_token,
-// //			access_token: access_token,
-// 		}
-// 	});
-// 	*/
-// }
-
-
-
 
 module.exports = {
 	getUserPhotos,
 	getUserAlbums,
 	// store,
-	// login,
 	updateUserProfile,
 	deleteUserProfile,
 }

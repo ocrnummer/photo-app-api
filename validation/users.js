@@ -1,5 +1,5 @@
 const { body } = require('express-validator');
-const models = require('../models');
+const { User } = require('../models');
 
 
 /**
@@ -11,7 +11,7 @@ const models = require('../models');
 
 const createRules = [
     body('email').exists().isEmail().custom(async value => {
-        const email = await new models.Users({ email: value }).fetch({ require: false });
+        const email = await new User({ email: value }).fetch({ require: false });
         if (email) {
             return Promise.reject('Email already in use.');
         }

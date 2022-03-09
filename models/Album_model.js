@@ -1,15 +1,15 @@
 /**
- * Photos model
+ * Albums model
  */
 
 module.exports = (bookshelf) => {
-	return bookshelf.model('Photos', {
-		tableName: 'Photos',
+	return bookshelf.model('Album', {
+		tableName: 'Albums',
 		user() {
-			return this.belongsTo('Users');
+			return this.belongsTo('User');
 		},
-		albums() {
-			return this.belongsToMany('Albums');
+		photos() {
+			return this.belongsToMany('Photo');
 		}
 	}, {
 		async fetchById(id, fetchOptions = {}) {
@@ -17,3 +17,4 @@ module.exports = (bookshelf) => {
 		},
 	});
 };
+

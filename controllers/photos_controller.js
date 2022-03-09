@@ -11,13 +11,15 @@ const models = require('../models');
  *
  * GET /
  */
-const index = async (req, res) => {
-	const all_photos = await models.Photos.fetchAll();
+
+const getPhotos = async (req, res) => {
+
+	await req.user.load('photos');
 
 	res.send({
 		status: 'success',
 		data: { 
-			photos: all_photos
+			photos: req.user.related('photos')
 		}
 	});
 }
@@ -28,40 +30,31 @@ const index = async (req, res) => {
  * GET /:photoId
  */
 
-const show = async (req, res) => {
-	// console.log(req.user.id);
-	// console.log(req.params.photoId);
+const getSpecificPhoto = async (req, res) => {
 
+	const photo = await new models.Photo({ id: req.params.photoId }).fetch({ withRelated: ['albums'] })
 
-
-
-	const photo2 = await new models.Photos({ id: req.params.photoId}, { withRelated: ['user'] }).fetch();
-
-
-
-	const user = await new models.Users({ id: req.user.id}, {withRelated: ['photos']}).fetch();
-
-	const userPhotos = user.related('photos')
-	
-	const photos = userPhotos.find(photo =>
-		photo.id == req.params.photoId);
-
-
-	if (!photos) {
-		return res.status(404).send({
-			status: 'fail',
-			message: 'Photo not found',
-		});
-	}
-
-
-
-	res.status(200).send({
+	res.send({
 		status: 'success',
-		data: {
-			photos,
-		}
-	});
+		data: photo,
+	})
+	
+	// const user = await req.user.load('photos');
+
+	// const userPhoto = user.related('photos').find(photo => photo.id == req.params.photosId);
+
+	// console.log(userPhoto);
+	
+	// if (userPhoto) {
+	// 	const userPhoto = await models.Photo.fetchById( req.params.photosId, { withRelated: ['user']});
+
+	// 	res.send({
+	// 		status: 'success',
+	// 		data: userPhoto
+	// 	})
+	// } else {
+	// 	return res.status(404).send({ status: 'Failed to get photo'})
+	// }
 
 }
 
@@ -308,8 +301,8 @@ const destroy = async (req, res) => {
 }
 
 module.exports = {
-	index,
-	show,
+	getPhotos,
+	getSpecificPhoto,
 	store,
 	update,
 	destroy,

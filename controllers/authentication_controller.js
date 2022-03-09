@@ -4,7 +4,7 @@
 
 const bcrypt = require('bcrypt');
 const { matchedData, validationResult } = require('express-validator');
-const models = require('../models');
+const { User } = require('../models');
 
 
 
@@ -25,7 +25,7 @@ const registerNewUser = async (req, res) => {
 
 	// Hashing 10 rounds
 	try {
-		validData.password = await bcrypt.hash(validData.password, models.Users.hashSalt);
+		validData.password = await bcrypt.hash(validData.password, User.hashSalt);
 
 	} catch (error) {
 		res.status(500).send({
@@ -37,7 +37,7 @@ const registerNewUser = async (req, res) => {
 
 	// Save to database and show response without password
 	try {
-		const user = await new models.Users(validData).save();
+		const user = await new User(validData).save();
 
 		res.send({
 			status: 'success',

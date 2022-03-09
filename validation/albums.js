@@ -13,13 +13,13 @@ const models = require('../models');
  */
 const createRules = [
 	body('title').exists().isLength({ min: 1 }),
-	body('user_id').exists().bail().custom(async value => {
-		const user = await new models.Users({ id: value }).fetch({ require: false });
-		if(!user) {
-			return Promise.rejected(`No user with ${value} exists.`)
-		}
-		return Promise.resolve();
-	}),
+	// body('user_id').exists().bail().custom(async value => {
+	// 	const user = await new models.User({ id: value }).fetch({ require: false });
+	// 	if(!user) {
+	// 		return Promise.rejected(`No user with ${value} exists.`)
+	// 	}
+	// 	return Promise.resolve();
+	// }),
 ];
 
 /**
@@ -37,7 +37,19 @@ const updateRules = [
 	body('title').optional().isLength({ min: 1 }),
 ];
 
+const addPhotoRules = [
+	body('photo_id').exists().bail().custom(async value => {
+		const photo = await new models.Poto({ id: value }).fetch({ require: false });
+		if (photo) {
+			return Promise.resolve
+
+		}
+		return Promise.reject('No photo with that id exists')
+	})
+];
+
 module.exports = {
 	createRules,
 	updateRules,
+	addPhotoRules,
 }
