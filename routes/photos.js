@@ -3,11 +3,13 @@ const router = express.Router();
 const photosController = require('../controllers/photos_controller');
 const photosValidationRules = require('../validation/photos');
 
-/* Get all photos */
+/* Get athenticated users photo */
 router.get('/', photosController.index);
 
-/* Get a photo */
-router.get('/:id', photosController.show);
+
+/* Get photo by id */
+router.get('/:photoId', photosController.show);
+
 
 /* Store a new photo */
 router.post('/', photosValidationRules.createRules, photosController.store);

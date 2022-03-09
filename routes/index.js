@@ -16,9 +16,6 @@ router.use('/albums', authentication.basic, require('./albums'));
 router.use('/users', require('./users'));
 
 
-router.post('/login', authController.login);
-
-
 router.post('/register', usersValidationRules.createRules, authController.registerNewUser);
 
 module.exports = router;

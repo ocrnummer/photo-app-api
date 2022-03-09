@@ -1,6 +1,7 @@
 const { body } = require('express-validator');
 const models = require('../models');
 
+
 /**
  * Create user validation rules
  *
@@ -9,7 +10,6 @@ const models = require('../models');
  */
 
 const createRules = [
-
     body('email').exists().isEmail().custom(async value => {
         const email = await new models.Users({ email: value }).fetch({ require: false });
         if (email) {
@@ -39,7 +39,23 @@ const updateRules = [
 	body('last_name').optional().isLength({ min: 3 })
 ];
 
+
+/**
+ * Add photo to user rule
+ */
+
+const addPhotoRules = [
+    body('photo_id').exists().bail().custom().isLength(async value => {
+        const photo = await new models.Photos({ id: value }).fetch({ require: false });
+        if (photo) {
+            return Promise.resolve();
+        }
+        return Promise.reject(`No photo with ID ${value}.`);
+    })
+]
+
 module.exports = {
 	createRules,
 	updateRules,
+    addPhotoRules,
 }

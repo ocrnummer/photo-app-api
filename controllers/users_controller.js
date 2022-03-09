@@ -7,36 +7,16 @@ const debug = require('debug')('photo-app-api:users_controller');
 const { matchedData, validationResult } = require('express-validator');
 const models = require('../models');
 
-/**
- * Get all users
- *
- * GET /
- * 
- *  		RENSA BORT SEN?
- */
-const index = async (req, res) => {
-	const all_users = await models.Users.fetchAll();
-
-	res.send({
-		status: 'success',
-		data: { 
-			users: all_users
-		}
-	});
-}
-
-
-
-
 
 /**
  * Get authenticated user profile
  *
  * GET /
-*/
+
 const getProfile = async (req, res) => {
+	console.log(req.user.id)
 	try {
-		const user = await User.fetchById(req.user.id);
+		const user = await models.Users.fetchById(req.user.id);
 
 		res.send({
 			status: 'success',
@@ -48,6 +28,8 @@ const getProfile = async (req, res) => {
 		return res.sendStatus(404);
 	}
 }
+
+*/
 
 
 
@@ -73,6 +55,7 @@ const getUserPhotos = async (req, res) => {
 	});
 }
 
+
 const getUserAlbums = async (req, res) => {
 	const user = await new models.Users({ id: req.params.id })
 		.fetch({ withRelated: ['albums'] });
@@ -92,44 +75,6 @@ const getUserAlbums = async (req, res) => {
 
 
 
-
-
-
-/**
-* Register a new user
-*
-* POST /
-*/
-
-
-const store = async (req, res) => {
-	// check for any validation errors
-	const errors = validationResult(req);
-	if (!errors.isEmpty()) {
-		return res.status(422).send({ status: 'fail', data: errors.array() });
-	}
-
-	// get only the validated data from the request
-	const validData = matchedData(req);
-
-	try {
-		const user = await new models.Users(validData).save();
-		debug("Register new user successfully", user);
-
-		const newUser = user.
-		res.send({
-			status: 'success',
-			data: user.email,
-		});
-
-	} catch (error) {
-		res.status(500).send({
-			status: 'error',
-			message: 'Exception thrown in database when registering a new user.',
-		});
-		throw error;
-	}
-}
 
 
 
@@ -236,41 +181,39 @@ const deleteUserProfile = async (req, res) => {
 
 
 
-const login = async (req, res) => {
-	// destructure email and password from request body
-	const { email, password } = req.body;
+// const login = async (req, res) => {
+// 	// destructure email and password from request body
+// 	const { email, password } = req.body;
 
-	// login the user
-	const user = await models.User.login(email, password);
-	if (!user) {
-		return res.status(401).send({
-			status: 'fail',
-			data: 'Authentication failed.',
-		});
-	}
+// 	// login the user
+// 	const user = await models.User.login(email, password);
+// 	if (!user) {
+// 		return res.status(401).send({
+// 			status: 'fail',
+// 			data: 'Authentication failed.',
+// 		});
+// 	}
 
-	/*
-	// respond with the access-token
-	return res.send({
-		status: 'success',
-		data: {
-			access_token,
-//			access_token: access_token,
-		}
-	});
-	*/
-}
+// 	/*
+// 	// respond with the access-token
+// 	return res.send({
+// 		status: 'success',
+// 		data: {
+// 			access_token,
+// //			access_token: access_token,
+// 		}
+// 	});
+// 	*/
+// }
 
 
 
 
 module.exports = {
-	index,
-	getProfile,
 	getUserPhotos,
 	getUserAlbums,
-	store,
-	login,
+	// store,
+	// login,
 	updateUserProfile,
 	deleteUserProfile,
 }

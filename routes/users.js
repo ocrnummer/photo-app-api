@@ -4,15 +4,10 @@ const usersController = require('../controllers/users_controller');
 const usersValidationRules = require('../validation/users');
 
 
-/* Get all users - Rensa bort sen? */
-router.get('/', usersController.index);
-
-
-
 
 
 /* Get athenticated users profile */
-router.get('/', usersController.getProfile);
+// router.get('/', usersController.getProfile);
 
 
 /* Get athenticated users photos */

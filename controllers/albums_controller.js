@@ -11,13 +11,19 @@ const models = require('../models');
  *
  * GET /
  */
-const index = async (req, res) => {
-	const all_albums = await models.Albums.fetchAll();
+const getAlbums = async (req, res) => {
 
-	res.send({
+	const user = await models.Users.fetchById(req.user.id, {
+		withRelated: ['albums'],
+	})
+
+	// const user = await new models.Users
+
+	res.status(200).send({
 		status: 'success',
 		data: { 
-			albums: all_albums
+			albums: user
+			.related('albums')
 		}
 	});
 }
@@ -27,7 +33,9 @@ const index = async (req, res) => {
  *
  * GET /:Id
  */
-const show = async (req, res) => {
+const getSpecificAlbum = async (req, res) => {
+	console.log(req.header)
+
 	const album = await new models.Albums({ id: req.params.id })
 		.fetch({ withRelated: ['user', 'photos'] });
 
@@ -45,15 +53,11 @@ const show = async (req, res) => {
 * POST /
 */
 
-const store = async (req, res) => {
-	// check for any validation errors
-	const errors = validationResult(req);
-	if (!errors.isEmpty()) {
-		return res.status(422).send({ status: 'fail', data: errors.array() });
-	}
+const storeNewAlbum = async (req, res) => {
 
-	// get only the validated data from the request
 	const validData = matchedData(req);
+
+	validData.user_id = req.user.id;
 
 	try {
 		const album = await new models.Albums(validData).save();
@@ -73,12 +77,14 @@ const store = async (req, res) => {
 	}
 }
 
+
+
 /**
  * Update a specific album
  *
  * PUT /:Id
  */
-const update = async (req, res) => {
+const updateAlbum = async (req, res) => {
 
 	// make sure the album exists
 	const album = await new models.Albums({ id: req.params.id }).fetch({ require: false });
@@ -159,9 +165,9 @@ const destroy = async (req, res) => {
 }
 
 module.exports = {
-	index,
-	show,
-	store,
-	update,
+	getAlbums,
+	getSpecificAlbum,
+	storeNewAlbum,
+	updateAlbum,
 	destroy,
 }
