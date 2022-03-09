@@ -185,7 +185,7 @@ const show = async (req, res) => {
 * POST /
 */
 
-const store = async (req, res) => {
+const storeNewPhoto = async (req, res) => {
 	// check for any validation errors
 	const errors = validationResult(req);
 	if (!errors.isEmpty()) {
@@ -220,12 +220,12 @@ const store = async (req, res) => {
  *
  * PUT /:Id
  */
-const update = async (req, res) => {
+const updatePhoto = async (req, res) => {
 
-	// make sure photo exists
-	const photo = await new models.Photos({ id: req.params.id }).fetch({ require: false });
+	// make sure the album exists
+	const photo = await new models.Photo({ id: req.params.photoId }).fetch({ require: false });
 	if (!photo) {
-		debug("No photo to update was found", { id, });
+
 		res.status(404).send({
 			status: 'fail',
 			data: 'Photo Not Found',
@@ -244,7 +244,6 @@ const update = async (req, res) => {
 
 	try {
 		const updatePhoto = await photo.save(validData);
-		debug("Updated photo successfully", updatePhoto);
 
 		res.send({
 			status: 'success',
@@ -254,56 +253,17 @@ const update = async (req, res) => {
 	} catch (error) {
 		res.status(500).send({
 			status: 'error',
-			message: 'Exception thrown in database when updating a photo.',
+			message: 'Exception thrown in database when updating an album.',
 		});
 		throw error;
 	}
 }
 
-/**
- * Remove a specific photo
- *
- * DELETE /:Id
- */
-const destroy = async (req, res) => {
 
-	const photo = await new models.Photos({ id: req.params.id }).fetch({ require: false });
-
-	if (!photo) {
-		debug("No photo to delete was found", { id, });
-		res.status(404).send({
-			status: 'fail',
-			data: 'Photo Not Found',
-		});
-		return;
-	}
-
-	try {
-
-		const deletePhoto = await photo.destroy();
-		debug("Photo deleted successfully", deletePhoto);
-
-		res.send({
-			status: 'success',
-		});
-
-		if(!photo) {
-			return res.sendStatus(404);
-		};
-
-		} catch (error) {
-		res.status(500).send({
-			status: 'error',
-			message: 'Exception thrown in database when deleting a photo.',
-		});
-		throw error;
-	};
-}
 
 module.exports = {
 	getPhotos,
 	getSpecificPhoto,
-	store,
-	update,
-	destroy,
+	storeNewPhoto,
+	updatePhoto,
 }

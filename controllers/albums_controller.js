@@ -104,7 +104,7 @@ const storeNewAlbum = async (req, res) => {
 /**
  * Update a specific album
  *
- * PUT /:Id
+ * PUT /:photoId
  */
 const updateAlbum = async (req, res) => {
 
@@ -144,7 +144,7 @@ const updateAlbum = async (req, res) => {
 		});
 		throw error;
 	}
-}
+};
 
 
 

@@ -39,9 +39,9 @@ const updateRules = [
 
 const addPhotoRules = [
 	body('photo_id').exists().bail().custom(async value => {
-		const photo = await new models.Poto({ id: value }).fetch({ require: false });
+		const photo = await new models.Photo({ id: value }).fetch({ require: false });
 		if (photo) {
-			return Promise.resolve
+			return Promise.resolve;
 
 		}
 		return Promise.reject('No photo with that id exists')

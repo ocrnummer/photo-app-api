@@ -12,12 +12,11 @@ router.get('/:photoId', photosController.getSpecificPhoto);
 
 
 /* Store a new photo */
-router.post('/', photosValidationRules.createRules, photosController.store);
+router.post('/', photosValidationRules.createRules, photosController.storeNewPhoto);
 
 /* Update a photo */
-router.put('/:photoId', photosValidationRules.updateRules, photosController.update);
+router.put('/:photoId', photosValidationRules.updateRules, photosController.updatePhoto);
 
-/* Destroy a photo */
-router.delete('/:id', photosController.destroy);
+
 
 module.exports = router;
