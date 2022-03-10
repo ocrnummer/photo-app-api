@@ -2,5 +2,4 @@
 /**/node_modules/
 *-nogit
 /**/*.env
-
-/03-db/uploads/
+.DS_Store
