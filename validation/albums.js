@@ -1,33 +1,31 @@
 /**
- * Album Validation Rules
- */
-
+* Album Validation Rules
+*/
 const { body } = require('express-validator');
 const models = require('../models');
 
 /**
- * Create Album validation rules
- *
- * Required: title
- * Optional: -
- */
+* Create Album validation rules
+*
+* Required: title
+* Optional: -
+*/
 const createRules = [
 	body('title').exists().isLength({ min: 1 }),
 ];
 
 /**
- * Update Album validation rules
- *
- * Required: -
- * Optional:  password, first_name, last_name
+* Update Album validation rules
+*
+* Required: -
+* Optional:  password, first_name, last_name
 */
 const updateRules = [
 	body('title').optional().isLength({ min: 1 }),
 ];
 
 /**
- * Add Photo rules
- *
+* Add Photo rules
 */
 const addPhotoRules = [
 	body('photo_id').exists().bail().custom(async value => {

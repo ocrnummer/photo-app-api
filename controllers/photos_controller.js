@@ -1,17 +1,16 @@
 /**
  * Photos Controller
  */
-
 const { matchedData, validationResult } = require('express-validator');
 const models = require('../models');
 
 /**
- * Get all photos
+ * Get all users photos
  *
  * GET /
  */
 const getPhotos = async (req, res) => {
-
+	// Get user and related photos from request
 	await req.user.load('photos');
 
 	res.send({
@@ -29,13 +28,24 @@ const getPhotos = async (req, res) => {
  * GET /:photoId
  */
 const getSpecificPhoto = async (req, res) => {
+	
+	// get user and related photos from request
+	await req.user.load('photos');
 
-	const photo = await new models.Photo({ id: req.params.photoId }).fetch({ withRelated: ['albums'] })
+	// check if photos belongs to user
+	const relatedPhoto = req.user.related('photos');
+	const userPhoto = relatedPhoto.find(photo => photo.id == req.params.photoId);
 
-	res.send({
-		status: 'success',
-		data: photo,
-	})
+	if (!userPhoto) {
+		return res.send({
+			status: 'fail',
+			data: 'Not authorized'
+		})
+	}
+	res.send({ 
+		status: 'Success',
+		data: userPhoto
+	});
 }
 
 
@@ -54,11 +64,12 @@ const storeNewPhoto = async (req, res) => {
 	// get only the validated data from the request
 	const validData = matchedData(req);
 
+	// Write to user_id
 	validData.user_id = req.user.id;
 
 	try {
+		// save new photo to db
 		const photo = await new models.Photo(validData).save();
-		// debug("Post new photo successfully: %O", photo);
 
 		res.send({
 			status: 'success',
@@ -82,7 +93,7 @@ const storeNewPhoto = async (req, res) => {
  */
 const updatePhoto = async (req, res) => {
 
-	// make sure the album exists
+	// make sure the photo exists
 	const photo = await new models.Photo({ id: req.params.photoId }).fetch({ require: false });
 	if (!photo) {
 
@@ -103,6 +114,7 @@ const updatePhoto = async (req, res) => {
 	const validData = matchedData(req);
 
 	try {
+		// save update to photo
 		const updatePhoto = await photo.save(validData);
 
 		res.send({

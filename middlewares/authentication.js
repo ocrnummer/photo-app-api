@@ -1,5 +1,4 @@
 const bcrypt = require('bcrypt');
-const debug = require('debug')('p:auth');
 const models = require('../models');
 
 /**
@@ -7,28 +6,21 @@ const models = require('../models');
  */
 
 const basic = async (req, res, next) => {
-    debug("Hello from auth.basic!");
 
+    //  Check header if for authorization exists
     if (!req.headers.authorization) {
-        debug("Authorization header missing");
-
         return res.status(401).send({
             status: 'fail',
-            data: 'Authorization required1',
+            data: 'Authorization from header required',
         });
     }
 
-    debug("Authorization header: %o", req.headers.authorization);
-
     const [authSchema, base64Payload] = req.headers.authorization.split(' ');
-
-
     if (authSchema.toLowerCase() !== "basic") {
-        debug("Authorization schema isn't basic");
 
         return res.status(401).send({
             status: 'fail',
-            data: 'Authorization required2',
+            data: 'Authorization required',
         });
     }
 
@@ -41,7 +33,7 @@ const basic = async (req, res, next) => {
     if (!user) {
         return res.status(401).send({
             status: 'fail',
-            data: 'Authorization failed3',
+            data: 'Authorization failed',
         });
     }
     const hash = user.get('password');
@@ -50,14 +42,12 @@ const basic = async (req, res, next) => {
     if (!result) {
         return res.status(401).send({
             status: 'fail',
-            data: 'Authorization failed4',
+            data: 'Authorization failed',
         });
     }
 
-    // finally, attach user to request
     req.user = user;
 
-    // pass request along
     next();
 }
 

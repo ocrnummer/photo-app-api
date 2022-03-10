@@ -11,12 +11,12 @@ const { User } = require('../models');
 * POST/
 */
 const registerNewUser = async (req, res) => {
-
 	const errors = validationResult(req);
 	if (!errors.isEmpty()) {
 		return res.status(422).send({ status: 'fail', data: errors.array() });
 	}
 
+	// Get only validated data from req
 	const validData = matchedData(req);
 
 	// Hashing 10 rounds
