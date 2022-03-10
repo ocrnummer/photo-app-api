@@ -6,10 +6,8 @@ const photosValidationRules = require('../validation/photos');
 /* Get athenticated users photo */
 router.get('/', photosController.getPhotos);
 
-
 /* Get photo by id */
 router.get('/:photoId', photosController.getSpecificPhoto);
-
 
 /* Store a new photo */
 router.post('/', photosValidationRules.createRules, photosController.storeNewPhoto);

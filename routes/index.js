@@ -7,17 +7,14 @@ const authentication = require('../middlewares/authentication');
 
 /* GET / */
 router.get('/', (req, res, next) => {
-	res.send({ success: true, data: { msg: 'oh, hi' }});
+	res.send({ success: true, data: { msg: 'oh, hello. Up and running!' }});
 });
 
 // Router
 router.use('/photos', authentication.basic, require('./photos'));
 router.use('/albums', authentication.basic, require('./albums'));
 
-// router.use('/users', require('./users'));
-
-
+// Register user
 router.post('/register', usersValidationRules.createRules, authController.registerNewUser);
-
 
 module.exports = router;

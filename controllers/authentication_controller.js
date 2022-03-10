@@ -1,19 +1,15 @@
 /**
  * Users Controller
  */
-
 const bcrypt = require('bcrypt');
 const { matchedData, validationResult } = require('express-validator');
 const { User } = require('../models');
-
-
 
 /**
 * Register a new user
 *
 * POST/
 */
-
 const registerNewUser = async (req, res) => {
 
 	const errors = validationResult(req);
@@ -56,8 +52,6 @@ const registerNewUser = async (req, res) => {
 		throw error;
 	}	
 }
-
-
 
 
 module.exports = {

@@ -5,6 +5,7 @@ const models = require('../models');
 /**
  * HTTP Basic Authentication
  */
+
 const basic = async (req, res, next) => {
     debug("Hello from auth.basic!");
 
